@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
 })
 
 UserSchema.methods = {
-  authenticate: () => true
+  authenticate: (password) => true
 }
 
 export default mongoose.model('User', UserSchema)

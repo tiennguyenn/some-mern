@@ -7,11 +7,17 @@ import helmet from 'helmet'
 import template from './../template'
 import path from 'path'
 import userRoutes from './routes/user.routes'
+import authRoutes from './routes/auth.routes'
+import ReactDOMServer from 'react-dom/server'
+import React from 'react'
 
 const app = express()
 
 //comment out before building for production
 import devBundle from './devBundle'
+import MainRouter from '../client/MainRouter'
+import { StaticRouter } from 'react-router'
+import { ServerStyleSheets } from '@material-ui/styles'
 devBundle.compile(app)
 
 app.use(bodyParser.json())
@@ -25,9 +31,21 @@ const CURRENT_WORKING_DIR = process.cwd()
 app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 
 app.use('/', userRoutes)
+app.use('/', authRoutes)
 
-app.get('/', (req, res) => {
-  res.status(200).send(template())
+app.get('/*', (req, res) => {
+  const sheets = new ServerStyleSheets()
+  const context = {}
+  const html = ReactDOMServer.renderToString(
+    sheets.collect(
+      <StaticRouter context={context} location={req.url}>
+        <MainRouter/>
+      </StaticRouter>
+    )
+  )
+
+  const css = sheets.toString()
+  res.status(200).send(template({html, css}))
 })
 
 
