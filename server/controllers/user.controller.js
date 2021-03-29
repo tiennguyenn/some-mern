@@ -1,33 +1,34 @@
 import { extend } from "lodash"
 import User from "../models/user.model"
+import errorHandler from './../helpers/dbErrorHandler'
 
 const list = async (req, res) => {
   try {
     const users = await User.find().select('name email created updated')
     res.json(users)
-  } catch (error) {
-    return res.status(400).json({
-      error: error
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
     })
   }
 }
 
 const create = async (req, res) => {
-  console.log(req.body)
   const user = new User(req.body)
-  console.log(user)
   try {
     await user.save()
-    return res.json(user)
-  } catch (error) {
-    return res.status(400).json({
-      error: error
+    res.status(200).json({
+      message: "Successfully created user"
+    })
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
     })
   }
 }
 
 const read = async (req, res) => {
-  return res.json(req.profile)
+  res.json(req.profile)
 }
 
 const userByID = async (req, res, next, userId) => {
@@ -38,8 +39,10 @@ const userByID = async (req, res, next, userId) => {
     }
     req.profile = user
     next()
-  } catch (error) {
-    console.log(error)
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
   }
 }
 
@@ -48,9 +51,11 @@ const update = async (req, res) => {
     let user = req.profile
     user = extend(user, req.body)
     await user.save()
-    return res.json(user)
-  } catch (error) {
-    console.error(err);
+    res.json(user)
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
   }
 }
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 
-import {Card, CardContent, Typography, TextField, CardActions, Button, makeStyles, Dialog, DialogTitle, DialogContent, DialogActions} from '@material-ui/core'
+import {Card, CardContent, Typography, TextField, CardActions, Button, makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, Icon} from '@material-ui/core'
 
 import api from './api.user'
 import {Link} from 'react-router-dom'
@@ -81,8 +81,7 @@ const SignUp = () => {
           <TextField id="password" type="password" label="Password" 
              className={classes.textField} value={values.password} 
              onChange={handleChange('password')} margin="normal"/>
-          <br/> 
-          {
+          <br/> {
             values.error && (<Typography component="p" color="error">
               <Icon color="error" className={classes.error}>error</Icon>
               {values.error}</Typography>)

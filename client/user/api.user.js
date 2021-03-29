@@ -9,7 +9,7 @@ const list = async () => {
 
 const read = async (userId, token) => {
   try {
-    const response = await fetch(`/api/user/${userId}`, {
+    const response = await fetch(`/api/users/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ const read = async (userId, token) => {
 
 const create = async user => {
   try {
-    const response = fetch('/api/users', {
+    const response = await fetch('/api/users', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

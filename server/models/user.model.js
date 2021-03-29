@@ -28,16 +28,30 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema
   .virtual('password')
-  .set(password => {
-    this.salt = UserSchema.makeSalt(),
-    this.hashed_password = UserSchema.encryptPassword(password)
+  .get(function() { return this._password })
+  .set(function(password) {
+    this._password = password
+    this.salt = this.makeSalt()
+    this.hashed_password = this.encryptPassword(password)
   })
-  .get(() => this.password)
+
+UserSchema.path('hashed_password').validate(function() {
+  if (this._password && this._password.length < 6) {
+    this.invalidate('password', 'Password must be at least 6 characters')
+  }
+  if (this.isNew && !this._password) {
+    this.invalidate('password', "Password is required")
+  }
+}, null)
 
 UserSchema.methods = {
-  authenticate: (password) => true,
-  makeSalt: () => (Math.round(new Date().valueOf() * Math.random()) + ''),
-  encryptPassword: password => {
+  authenticate: function(password) {
+    return this.encryptPassword(password) === this.hashed_password
+  },
+  makeSalt: function() {
+    return Math.round(new Date().valueOf() * Math.random()) + ''
+  },
+  encryptPassword: function(password) {
     if (!password) {
       return ''
     }

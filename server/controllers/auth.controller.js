@@ -10,13 +10,13 @@ const signIn = async (req, res) => {
   
     const user = await User.findOne({email})
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         error: 'User not found'
       })
     }
 
     if (!user.authenticate(password)) {
-      return res.status(401).json({
+      res.status(401).json({
         error: 'Authenticate is failed'
       })
     }
@@ -25,12 +25,14 @@ const signIn = async (req, res) => {
 
     user.salt = undefined
     user.hashed_password = undefined
-    return res.status(200).json({
+    res.json({
       token,
       user
     })
-  } catch (error) {
-    return res.status(401).json({error})
+  } catch (err) {
+    return res.status(401).json({
+      error: "Could not sign in"
+    })
   }
 }
 
