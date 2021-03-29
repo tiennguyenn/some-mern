@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Redirect } from 'react-router-dom'
 import auth from './auth-helper'
 import api from './api-auth'
+import { Button, Card, CardActions, CardContent, Icon, TextField, Typography } from '@material-ui/core'
 
 const SignIn = () => {
   const [email, setEmail] = useState('')
@@ -24,24 +25,30 @@ const SignIn = () => {
       if (result.error) {
         setError(result.error)
       } else {
-        auth.authenticate()
-        setRedirect(true)
+        auth.authenticate(result, () => {
+          setRedirect(true)
+        })
       }
     })
   }
-
 
   if (redirect) {
     return (<Redirect to="/" />)
   }
 
   return (
-    <form onSubmit={e => handleSubmit(e)}>
-      <span>{error}</span>
-      <input name="email" onChange={e => handleEmail(e)} />
-      <input type="password" name="password" onChange={e => handlePassword(e)} />
-      <button type="submit">Submit</button>
-    </form>
+    <Card>
+      <CardContent>
+        <Typography variant="h6">Sign In</Typography>
+        <TextField id="emal" type="email" label="Email" onChange={e => handleEmail(e)} />
+        <TextField id="password" type="password" label="Password" onChange={e => handlePassword(e)} />
+        <br/>
+        {error && <Typography component="p" color="error"><Icon color="error">error</Icon>{error}</Typography>}
+      </CardContent>
+      <CardActions>
+        <Button variant="outlined" onClick={e => handleSubmit(e)}>Submit</Button>
+      </CardActions>
+    </Card>
   )
 }
 

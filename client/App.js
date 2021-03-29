@@ -1,7 +1,9 @@
+import { ThemeProvider } from '@material-ui/styles'
 import React, { useEffect } from 'react'
 import { hot } from 'react-hot-loader'
 import { BrowserRouter } from 'react-router-dom'
 import MainRouter from './MainRouter'
+import theme from './theme'
 
 const App = () => {
   useEffect(() => {
@@ -10,7 +12,9 @@ const App = () => {
 
   return (
       <BrowserRouter>
-        <MainRouter />
+        <ThemeProvider theme={theme}>
+          <MainRouter />
+        </ThemeProvider>
       </BrowserRouter>
     )
 }

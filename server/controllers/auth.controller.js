@@ -1,3 +1,7 @@
+import jwt from 'jsonwebtoken'
+import expressJwt from 'express-jwt'
+
+import config from './../../config/config'
 import User from './../models/user.model'
 
 const signIn = async (req, res) => {
@@ -17,11 +21,23 @@ const signIn = async (req, res) => {
       })
     }
 
-    user.salf = undefined
-    return res.status(200).json(user)
+    const token = jwt.sign({id: user._id}, config.jwtSecret)
+
+    user.salt = undefined
+    user.hashed_password = undefined
+    return res.status(200).json({
+      token,
+      user
+    })
   } catch (error) {
     return res.status(401).json({error})
   }
 }
 
-export default {signIn}
+const requireSignIn = expressJwt({
+  secret: config.jwtSecret,
+  userProperty: 'auth',
+  algorithms: ['HS256']
+})
+
+export default {signIn, requireSignIn}

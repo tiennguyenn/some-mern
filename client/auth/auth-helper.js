@@ -3,19 +3,20 @@ const isAuthenticated = () => {
     return false
   }
 
-  if (sessionStorage.getItem('user')) {
-    return true
+  if (sessionStorage.getItem('jwt')) {
+    return JSON.parse(sessionStorage.getItem('jwt'))
   }
 
   return false
 }
 
-const authenticate = () => {
-  sessionStorage.setItem('user', 1)
+const authenticate = (jwt, cb) => {
+  sessionStorage.setItem('jwt', JSON.stringify(jwt))
+  cb()
 }
 
 const clearUser = () => {
-  sessionStorage.removeItem('user')
+  sessionStorage.removeItem('jwt')
 }
 
 export default {isAuthenticated, authenticate, clearUser}

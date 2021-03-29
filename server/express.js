@@ -8,16 +8,19 @@ import template from './../template'
 import path from 'path'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
+
 import ReactDOMServer from 'react-dom/server'
 import React from 'react'
+import { StaticRouter } from 'react-router'
+import MainRouter from '../client/MainRouter'
+
+import { ServerStyleSheets, ThemeProvider } from '@material-ui/styles'
+import theme from './../client/theme'
 
 const app = express()
 
 //comment out before building for production
 import devBundle from './devBundle'
-import MainRouter from '../client/MainRouter'
-import { StaticRouter } from 'react-router'
-import { ServerStyleSheets } from '@material-ui/styles'
 devBundle.compile(app)
 
 app.use(bodyParser.json())
@@ -39,7 +42,9 @@ app.get('/*', (req, res) => {
   const html = ReactDOMServer.renderToString(
     sheets.collect(
       <StaticRouter context={context} location={req.url}>
-        <MainRouter/>
+        <ThemeProvider theme={theme}>
+          <MainRouter/>
+        </ThemeProvider>
       </StaticRouter>
     )
   )
