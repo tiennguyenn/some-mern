@@ -39,5 +39,17 @@ const create = async user => {
   }
 }
 
+const remove = async (userId, token) => {
+  const response = await fetch('/api/users/' + userId, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  })
 
-export default {list, read, create}
+  return await response.json()
+}
+
+
+export default {list, read, create, remove}

@@ -61,12 +61,13 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    let user = req.profile
-    deletedUser = await user.remove()
-
-    return res.json()
-  } catch (error) {
-    console.log(error)
+    const user = req.profile
+    const deletedUser = await user.remove()
+    res.json(deletedUser)
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
   }
 }
 

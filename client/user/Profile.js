@@ -22,23 +22,28 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Profile = ({match}) => {
-  const jwt = auth.isAuthenticated()
+  const {token} = auth.isAuthenticated()
+  const classes = useStyles()
+  const userId = match.params.userId
+
   const [redirectToSignIn, setRedirectToSignIn] = useState(false)
   const [user, setUser] = useState({})
 
-  const classes = useStyles()
-
   useEffect(() => {
-    const userId = match.params.userId
-    const token = jwt.token
+    if (!token) {
+      auth.clearUser()
+      setRedirectToSignIn(true)
+      return
+    }
+
     api.read(userId, token).then(result => {
       if (result && result.error) {
-        console.log(result)
+        setRedirectToSignIn(true)
       } else {
         setUser(result)
       }
     })
-  }, [])
+  }, [userId])
 
   if (redirectToSignIn) {
     return <Redirect to="/sign-in" />
@@ -61,7 +66,7 @@ const Profile = ({match}) => {
                     <Edit/>
                   </IconButton>
                 </Link>
-                <DeleteUser />
+                <DeleteUser userId={userId} />
               </ListItemSecondaryAction>
             )
           }
