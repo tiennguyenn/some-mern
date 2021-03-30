@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
-import img from './../assets/unicornbike.jpg'
+import img from './../assets/images/unicornbike.jpg'
 
 const useStyles = makeStyles((theme) => ({
   card: {

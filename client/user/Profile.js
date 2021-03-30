@@ -49,13 +49,15 @@ const Profile = ({match}) => {
     return <Redirect to="/sign-in" />
   }
 
+  const photoUrl = "/api/users/photo/" + userId + "?" + new Date().getTime()
+
   return (
     <Paper className={classes.root} elevation={4}>
       <Typography variant="h6" className={classes.title}>Profile</Typography>
       <List>
         <ListItem>
           <ListItemAvatar>
-            <Avatar><Person/></Avatar>
+            <Avatar src={photoUrl}></Avatar>
           </ListItemAvatar>
           <ListItemText primary={user.name} secondary={user.email} />
           {

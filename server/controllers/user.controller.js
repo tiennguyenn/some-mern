@@ -1,6 +1,10 @@
+import formidable from "formidable"
 import { extend } from "lodash"
+import fs from 'fs'
+
 import User from "../models/user.model"
 import errorHandler from './../helpers/dbErrorHandler'
+import profilePic from './../../client/assets/images/profile-pic.png'
 
 const list = async (req, res) => {
   try {
@@ -33,7 +37,7 @@ const read = async (req, res) => {
 
 const userByID = async (req, res, next, userId) => {
   try {
-    const user = await User.findById(userId).select('_id name email about')
+    const user = await User.findById(userId).select('_id name email about photo')
     if (!user) {
       return res.status(401).json({error: "User not found"})
     }
@@ -47,16 +51,31 @@ const userByID = async (req, res, next, userId) => {
 }
 
 const update = async (req, res) => {
-  try {
+  let form = new formidable.IncomingForm()
+  form.keepExtensions = true
+  form.parse(req, async (err, fields, file) => {
+    if (err) {
+      return res.status(400).json({
+        error: ""
+      })
+    }
+    
     let user = req.profile
-    user = extend(user, req.body)
-    await user.save()
-    res.json(user)
-  } catch (err) {
-    res.status(400).json({
-      error: errorHandler.getErrorMessage(err)
-    })
-  }
+    if (file.photo) {
+      user.photo.data = fs.readFileSync(file.photo.path)
+      user.photo.contentType = file.photo.type
+    }
+    
+    try {
+      user = extend(user, req.body)
+      await user.save()
+      res.json(user)
+    } catch (err) {
+      res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+  })
 }
 
 const remove = async (req, res) => {
@@ -71,4 +90,17 @@ const remove = async (req, res) => {
   }
 }
 
-export default {list, create, read, update, remove, userByID}
+const photo = (req, res, next) => {
+  const user = req.profile
+  if (user.photo.data) {
+    res.set('Content-Type', user.photo.contentType)
+    return res.send(user.photo.data)
+  }
+  next()
+}
+
+const defaultPhoto = (req, res) => {
+  res.sendFile(process.cwd() + profilePic)
+}
+
+export default {list, create, read, update, remove, userByID, defaultPhoto, photo}

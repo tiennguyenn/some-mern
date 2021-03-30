@@ -13,6 +13,11 @@ router.route('/api/users/:userId')
   .put(authCtrl.requireSignIn, userCtrl.update)
   .delete(authCtrl.requireSignIn, userCtrl.remove)
 
+router.route('/api/users/photo/:userId')
+  .get(userCtrl.photo, userCtrl.defaultPhoto)
+router.route('/api/users/photo/defaultPhoto')
+  .get(userCtrl.defaultPhoto)
+
 
 router.param('userId', userCtrl.userByID)
 

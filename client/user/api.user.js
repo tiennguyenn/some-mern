@@ -55,10 +55,9 @@ const update = async (userId, token, user) => {
   const response = await fetch('/api/users/' + userId, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + token
     },
-    body: JSON.stringify(user)
+    body: user
   })
   return await response.json()
 }

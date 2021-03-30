@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, CardActions, CardContent, Icon, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Avatar, Button, Card, CardActions, CardContent, Icon, makeStyles, TextField, Typography } from '@material-ui/core'
+import FileUpload from '@material-ui/icons/AddPhotoAlternate'
 import {Redirect} from 'react-router'
 
 import auth from './../auth/auth-helper'
@@ -28,6 +29,17 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: 'auto',
     marginBottom: theme.spacing(2)
+  },
+  filename:{
+    marginLeft: theme.spacing(2)
+  },
+  input: {
+    display: 'none'
+  },
+  bigAvatar: {
+    width: 60,
+    height: 60,
+    margin: 'auto'
   }
 }))
 
@@ -41,6 +53,7 @@ const EditProfile = ({match}) => {
   const [name, setName] = useState()
   const [about, setAbout] = useState()
   const [email, setEmail] = useState()
+  const [photo, setPhoto] = useState()
   const [password, setPassword] = useState()
   const [redirectToSignIn, setRedirectToSignIn] = useState(false)
   const [redirectToProfile, setRedirectToProfile] = useState(false)
@@ -81,9 +94,19 @@ const EditProfile = ({match}) => {
     setPassword(e.target.value)
   }
 
+  const handlePhoto = (e) => {
+    setPhoto(e.target.files[0])
+  }
+
   const clickSubmit = () => {
-    const user = {name, email, password, about}
-    api.update(userId, token, user).then(data => {
+    let userData = new FormData()
+    userData.append('name', name)
+    userData.append('email', email)
+    userData.append('password', password)
+    userData.append('about', about)
+    userData.append('photo', photo)
+
+    api.update(userId, token, userData).then(data => {
       if (data && data.error) {
         setError(data.error)
         return
@@ -104,11 +127,22 @@ const EditProfile = ({match}) => {
     )
   }
 
+  const photoUrl = "/api/users/photo/" + userId + "?" + new Date().getTime()
+
   return (
     <Card className={classes.card}>
       <CardContent>
         <Typography variant="h6" className={classes.title}>Edit Profile</Typography>
-        <TextField value={name} onChange={handleName} id="name" label="Name" className={classes.textField}/>
+        <Avatar src={photoUrl} className={classes.bigAvatar}/><br/>
+        <input accept="image/*" onChange={handlePhoto} className={classes.input} id="icon-button-file" type="file" />
+        <label htmlFor="icon-button-file">
+          <Button variant="contained" color="default" component="span">
+            Upload
+            <FileUpload/>
+          </Button>
+        </label>
+        <span className={classes.filename}>{photo && photo.name}</span><br/>
+        <TextField value={name} onChange={handleName} id="name" label="Name" className={classes.textField} margin="normal"/>
         <TextField value={about} multiline rows="2" onChange={handleAbout} id="about" label="About" className={classes.textField}/>
         <TextField type="email" value={email} onChange={handleEmail} id="email" label="Email" className={classes.textField}/>
         <TextField type="password" id="password" onChange={handlePassword} label="Password" className={classes.textField}/>
