@@ -1,8 +1,122 @@
-const EditProfile = () => {
+import React, { useEffect, useState } from 'react'
+import { Button, Card, CardActions, CardContent, Icon, makeStyles, TextField, Typography } from '@material-ui/core'
+import {Redirect} from 'react-router'
+
+import auth from './../auth/auth-helper'
+import api from './api.user'
+
+const useStyles = makeStyles(theme => ({
+  card: {
+    maxWidth: 600,
+    margin: 'auto',
+    textAlign: 'center',
+    marginTop: theme.spacing(5),
+    paddingBottom: theme.spacing(2)
+  },
+  title: {
+    margin: theme.spacing(2),
+    color: theme.palette.protectedTitle
+  },
+  error: {
+    verticalAlign: 'middle'
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 300
+  },
+  submit: {
+    margin: 'auto',
+    marginBottom: theme.spacing(2)
+  }
+}))
+
+const EditProfile = ({match}) => {
+  
+  const classes = useStyles()
+  const {token, user} = auth.isAuthenticated()
+  const userId = match.params.userId
+
+  const [error, setError] = useState()
+  const [name, setName] = useState()
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
+  const [redirectToSignIn, setRedirectToSignIn] = useState(false)
+  const [redirectToProfile, setRedirectToProfile] = useState(false)
+
+  useEffect(() => {
+    if (!token) {
+      setRedirectToSignIn(true)
+    }
+
+    if (user._id != userId) {
+      setRedirectToSignIn(true)
+    }
+
+    api.read(userId, token).then(data => {
+      if (data && data.error) {
+        setError(data.error)
+      }
+      setName(data.name)
+      setEmail(data.email)
+    })
+
+  }, [])
+
+  const handleName = (e) => {
+    setName(e.target.value)
+  }
+
+  const handleEmail = (e) => {
+    setEmail(e.target.value)
+  }
+
+  const handlePassword = (e) => {
+    setPassword(e.target.value)
+  }
+
+  const clickSubmit = () => {
+    const user = {name, email, password}
+    api.update(userId, token, user).then(data => {
+      if (data && data.error) {
+        setError(data.error)
+        return
+      }
+      setRedirectToProfile(true)
+    })
+  }
+
+  if (redirectToSignIn) {
+    return (
+      <Redirect to="/sign-in" />
+    )
+  }
+
+  if (redirectToProfile) {
+    return (
+      <Redirect to={"/user/" + userId} />
+    )
+  }
+
   return (
-    <form>
-      <input />
-    </form>
+    <Card className={classes.card}>
+      <CardContent>
+        <Typography variant="h6" className={classes.title}>Edit Profile</Typography>
+        <TextField value={name} onChange={handleName} name="name" label="Name" className={classes.textField}/>
+        <TextField type="email" value={email} onChange={handleEmail} name="email" label="Email" className={classes.textField}/>
+        <TextField type="password" name="password" onChange={handlePassword} label="Password" className={classes.textField}/>
+        <br />
+        {
+          error && (<Typography component="p" color="error">
+            <Icon color="error">error</Icon>
+            {error}
+            </Typography>)
+        }
+      </CardContent>
+      <CardActions>
+        <Button onClick={clickSubmit} className={classes.submit} color="primary" variant="outlined">Submit</Button>
+      </CardActions>
+    </Card>
   )
 }
 

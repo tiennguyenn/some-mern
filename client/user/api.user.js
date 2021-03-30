@@ -51,5 +51,17 @@ const remove = async (userId, token) => {
   return await response.json()
 }
 
+const update = async (userId, token, user) => {
+  const response = await fetch('/api/users/' + userId, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify(user)
+  })
+  return await response.json()
+}
 
-export default {list, read, create, remove}
+
+export default {list, read, create, remove, update}

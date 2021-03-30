@@ -3,7 +3,7 @@ export default ({html,css}) => {
       <html lang="en">
         <head>
           <meta charset="utf-8">
-          <title>My social media</title>
+          <title>MERN</title>
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400">
           <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
           <style>

@@ -1,9 +1,12 @@
 import { Redirect, Route } from "react-router"
-import React from 'react'
+import React, {Component} from 'react'
 
-const PrivateRoute = () => {
+import auth from './auth-helper'
+
+const PrivateRoute = ({component: Component, ...rest}) => {
   return (
-    <Route render={props => (
+    <Route {...rest} render={props => (
+      auth.isAuthenticated() ? <Component {...props} /> :
       <Redirect to={{pathname: "/sign-in", state: {from: props.location}}} />
     )} />
   )

@@ -61,7 +61,7 @@ const Profile = ({match}) => {
           {
             auth.isAuthenticated().user && auth.isAuthenticated().user._id == user._id && (
               <ListItemSecondaryAction>
-                <Link to="/">
+                <Link to={"/user/edit/" + user._id}>
                   <IconButton color="secondary">
                     <Edit/>
                   </IconButton>

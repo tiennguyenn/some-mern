@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.3'
 
 services:
   mongo:
@@ -18,3 +18,14 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
+    depends_on: [mongo]
+
+  node:
+    image: node:14
+    volumes:
+      - "./:/app"
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: "npm run dev"
+    depends_on: [mongo, mongo-express]
