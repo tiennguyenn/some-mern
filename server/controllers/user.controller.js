@@ -33,7 +33,7 @@ const read = async (req, res) => {
 
 const userByID = async (req, res, next, userId) => {
   try {
-    const user = await User.findById(userId).select('_id name email')
+    const user = await User.findById(userId).select('_id name email about')
     if (!user) {
       return res.status(401).json({error: "User not found"})
     }

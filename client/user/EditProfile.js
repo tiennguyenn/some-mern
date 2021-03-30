@@ -39,6 +39,7 @@ const EditProfile = ({match}) => {
 
   const [error, setError] = useState()
   const [name, setName] = useState()
+  const [about, setAbout] = useState()
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
   const [redirectToSignIn, setRedirectToSignIn] = useState(false)
@@ -59,12 +60,17 @@ const EditProfile = ({match}) => {
       }
       setName(data.name)
       setEmail(data.email)
+      setAbout(data.about)
     })
 
   }, [])
 
   const handleName = (e) => {
     setName(e.target.value)
+  }
+
+  const handleAbout = (e) => {
+    setAbout(e.target.value)
   }
 
   const handleEmail = (e) => {
@@ -76,7 +82,7 @@ const EditProfile = ({match}) => {
   }
 
   const clickSubmit = () => {
-    const user = {name, email, password}
+    const user = {name, email, password, about}
     api.update(userId, token, user).then(data => {
       if (data && data.error) {
         setError(data.error)
@@ -102,9 +108,10 @@ const EditProfile = ({match}) => {
     <Card className={classes.card}>
       <CardContent>
         <Typography variant="h6" className={classes.title}>Edit Profile</Typography>
-        <TextField value={name} onChange={handleName} name="name" label="Name" className={classes.textField}/>
-        <TextField type="email" value={email} onChange={handleEmail} name="email" label="Email" className={classes.textField}/>
-        <TextField type="password" name="password" onChange={handlePassword} label="Password" className={classes.textField}/>
+        <TextField value={name} onChange={handleName} id="name" label="Name" className={classes.textField}/>
+        <TextField value={about} multiline rows="2" onChange={handleAbout} id="about" label="About" className={classes.textField}/>
+        <TextField type="email" value={email} onChange={handleEmail} id="email" label="Email" className={classes.textField}/>
+        <TextField type="password" id="password" onChange={handlePassword} label="Password" className={classes.textField}/>
         <br />
         {
           error && (<Typography component="p" color="error">
