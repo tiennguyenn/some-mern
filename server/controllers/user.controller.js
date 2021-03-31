@@ -37,7 +37,10 @@ const read = async (req, res) => {
 
 const userByID = async (req, res, next, userId) => {
   try {
-    const user = await User.findById(userId).select('_id name email about photo')
+    const user = await User.findById(userId)
+      .select('_id name email about photo')
+      .populate('following', '_id name')
+      .populate('follower', '_id name')
     if (!user) {
       return res.status(401).json({error: "User not found"})
     }
@@ -103,4 +106,68 @@ const defaultPhoto = (req, res) => {
   res.sendFile(process.cwd() + profilePic)
 }
 
-export default {list, create, read, update, remove, userByID, defaultPhoto, photo}
+const addFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.body.userId,
+      {$push: {following: req.body.followId}}
+    )
+    next()
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const addFollower = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.body.followId,
+      {$push: {followers: req.body.userId}}
+    )
+    .populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec()
+
+    res.json(user)
+  } catch (err) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const removeFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.body.userId,
+      {$pull: {following: req.body.followId}}
+    )
+    next()
+  } catch (error) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const removeFollower = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.body.followId,
+      {$pull: {followers: req.body.userId}}
+    )
+    .populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec()
+
+    res.json(user)
+  } catch (error) {
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+export default {list, create, read, update, remove, userByID, defaultPhoto, photo, addFollowing, addFollower, removeFollowing, removeFollower}
