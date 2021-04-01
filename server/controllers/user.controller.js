@@ -38,12 +38,13 @@ const read = async (req, res) => {
 const userByID = async (req, res, next, userId) => {
   try {
     const user = await User.findById(userId)
-      .select('_id name email about photo')
       .populate('following', '_id name')
-      .populate('follower', '_id name')
+      .populate('followers', '_id name')
     if (!user) {
       return res.status(401).json({error: "User not found"})
     }
+    user.salt = undefined
+    user.hashed_password = undefined
     req.profile = user
     next()
   } catch (err) {
@@ -114,6 +115,7 @@ const addFollowing = async (req, res, next) => {
     )
     next()
   } catch (err) {
+    console.log("addfollwing", err)
     res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })
@@ -132,6 +134,7 @@ const addFollower = async (req, res) => {
 
     res.json(user)
   } catch (err) {
+    console.log("addfollower", err)
     res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })

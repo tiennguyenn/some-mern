@@ -1,12 +1,12 @@
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Typography } from '@material-ui/core'
+import { Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Typography } from '@material-ui/core'
 import { Edit } from '@material-ui/icons'
-import Person from '@material-ui/icons/Person'
 import React, { useEffect, useState } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
 import auth from './../auth/auth-helper'
 import api from './api.user'
 import DeleteUser from './DeleteUser'
+import FollowProfileButton from './FollowProfileButton'
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
@@ -22,12 +22,29 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Profile = ({match}) => {
-  const {token} = auth.isAuthenticated()
+  const jwt = auth.isAuthenticated()
+  const {token} = jwt
   const classes = useStyles()
   const userId = match.params.userId
 
   const [redirectToSignIn, setRedirectToSignIn] = useState(false)
   const [user, setUser] = useState({})
+  const [following, setFollowing] = useState()
+
+  const checkFollowing = (user) => {
+    return user.followers.some(item => item._id === jwt.user._id)
+  }
+
+  const handleFollow = (callAPI) => {
+    const {user} = auth.isAuthenticated()
+    callAPI(user._id, token, userId).then(data => {
+      if (data && data.error) {
+        console.log(data.error)
+        return
+      }
+      setFollowing(!following)
+    })
+  }
 
   useEffect(() => {
     if (!token) {
@@ -41,9 +58,10 @@ const Profile = ({match}) => {
         setRedirectToSignIn(true)
       } else {
         setUser(result)
+        setFollowing(checkFollowing(result))
       }
     })
-  }, [userId])
+  }, [])
 
   if (redirectToSignIn) {
     return <Redirect to="/sign-in" />
@@ -61,7 +79,7 @@ const Profile = ({match}) => {
           </ListItemAvatar>
           <ListItemText primary={user.name} secondary={user.email} />
           {
-            auth.isAuthenticated().user && auth.isAuthenticated().user._id == user._id && (
+            auth.isAuthenticated().user && auth.isAuthenticated().user._id == user._id ? (
               <ListItemSecondaryAction>
                 <Link to={"/user/edit/" + user._id}>
                   <IconButton color="secondary">
@@ -70,8 +88,12 @@ const Profile = ({match}) => {
                 </Link>
                 <DeleteUser userId={userId} />
               </ListItemSecondaryAction>
-            )
+            ) : <FollowProfileButton following={following} handleFollow={handleFollow} />
           }
+        </ListItem>
+        <Divider/>
+        <ListItem>
+          <ListItemText>Joined: {new Date(user.created).toDateString()}</ListItemText>
         </ListItem>
       </List>
     </Paper>

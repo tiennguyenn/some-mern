@@ -62,5 +62,29 @@ const update = async (userId, token, user) => {
   return await response.json()
 }
 
+const follow = async (userId, token, followId) => {
+  const response = await fetch('/api/users/follow', {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({userId, followId})
+  })
+  return await response.json()
+}
 
-export default {list, read, create, remove, update}
+const unfollow = async (userId, token, followId) => {
+  const response = await fetch('/api/users/unfollow', {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({userId, followId})
+  })
+  return await response.json()
+}
+
+
+export default {list, read, create, remove, update, follow, unfollow}
