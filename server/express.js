@@ -4,18 +4,20 @@ import cors from 'cors'
 import compress from 'compression'
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
-import template from './../template'
 import path from 'path'
-import userRoutes from './routes/user.routes'
-import authRoutes from './routes/auth.routes'
 
 import ReactDOMServer from 'react-dom/server'
 import React from 'react'
 import { StaticRouter } from 'react-router'
-import MainRouter from '../client/MainRouter'
-
 import { ServerStyleSheets, ThemeProvider } from '@material-ui/styles'
+
+import template from './../template'
+import MainRouter from '../client/MainRouter'
 import theme from './../client/theme'
+
+import userRoutes from './routes/user.routes'
+import authRoutes from './routes/auth.routes'
+import postRoutes from './routes/post.routes'
 
 const app = express()
 
@@ -35,6 +37,7 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 
 app.use('/', userRoutes)
 app.use('/', authRoutes)
+app.use('/', postRoutes)
 
 app.get('/*', (req, res) => {
   const sheets = new ServerStyleSheets()

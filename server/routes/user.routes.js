@@ -24,6 +24,9 @@ router.route('/api/users/photo/:userId')
 router.route('/api/users/photo/defaultPhoto')
   .get(userCtrl.defaultPhoto)
 
+router.route('/api/users/findpeople/:userId')
+  .get(authCtrl.requireSignIn, userCtrl.findPeople)
+
 router.param('userId', userCtrl.userByID)
 
 export default router

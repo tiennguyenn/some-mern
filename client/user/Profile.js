@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom'
 import auth from './../auth/auth-helper'
 import api from './api.user'
 import DeleteUser from './DeleteUser'
+import FindPeople from './FindPeople'
 import FollowProfileButton from './FollowProfileButton'
+import ProfileTabs from './ProfileTabs'
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
@@ -43,6 +45,7 @@ const Profile = ({match}) => {
         return
       }
       setFollowing(!following)
+      setUser(data)
     })
   }
 
@@ -61,7 +64,7 @@ const Profile = ({match}) => {
         setFollowing(checkFollowing(result))
       }
     })
-  }, [])
+  }, [userId])
 
   if (redirectToSignIn) {
     return <Redirect to="/sign-in" />
@@ -71,6 +74,7 @@ const Profile = ({match}) => {
 
   return (
     <Paper className={classes.root} elevation={4}>
+      <FindPeople />
       <Typography variant="h6" className={classes.title}>Profile</Typography>
       <List>
         <ListItem>
@@ -96,6 +100,7 @@ const Profile = ({match}) => {
           <ListItemText>Joined: {new Date(user.created).toDateString()}</ListItemText>
         </ListItem>
       </List>
+      <ProfileTabs user={user} />
     </Paper>
   )
 }

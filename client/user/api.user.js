@@ -86,5 +86,16 @@ const unfollow = async (userId, token, followId) => {
   return await response.json()
 }
 
+const findPeople = async (userId, token) => {
+  const response = await fetch('/api/users/findpeople/' + userId, {
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  })
+  return await response.json()
+}
 
-export default {list, read, create, remove, update, follow, unfollow}
+
+export default {findPeople, list, read, create, remove, update, follow, unfollow}

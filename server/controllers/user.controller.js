@@ -115,7 +115,6 @@ const addFollowing = async (req, res, next) => {
     )
     next()
   } catch (err) {
-    console.log("addfollwing", err)
     res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })
@@ -126,15 +125,14 @@ const addFollower = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.body.followId,
-      {$push: {followers: req.body.userId}}
+      {$push: {followers: req.body.userId}},
+      {new: true}
     )
     .populate('following', '_id name')
     .populate('followers', '_id name')
-    .exec()
 
     res.json(user)
   } catch (err) {
-    console.log("addfollower", err)
     res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })
@@ -159,11 +157,11 @@ const removeFollower = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.body.followId,
-      {$pull: {followers: req.body.userId}}
+      {$pull: {followers: req.body.userId}},
+      {new: true}
     )
     .populate('following', '_id name')
     .populate('followers', '_id name')
-    .exec()
 
     res.json(user)
   } catch (error) {
@@ -173,4 +171,19 @@ const removeFollower = async (req, res) => {
   }
 }
 
-export default {list, create, read, update, remove, userByID, defaultPhoto, photo, addFollowing, addFollower, removeFollowing, removeFollower}
+const findPeople = async (req, res) => {
+  try {
+    const {following} = req.profile
+    following.push(req.profile._id)
+  
+    const users = await User.find({_id: {$nin: following}}).select('name')
+    res.json(users)
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+export default {findPeople, list, create, read, update, remove, userByID, defaultPhoto, photo, addFollowing, addFollower, removeFollowing, removeFollower}
