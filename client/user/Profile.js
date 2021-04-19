@@ -74,7 +74,6 @@ const Profile = ({match}) => {
 
   return (
     <Paper className={classes.root} elevation={4}>
-      <FindPeople />
       <Typography variant="h6" className={classes.title}>Profile</Typography>
       <List>
         <ListItem>

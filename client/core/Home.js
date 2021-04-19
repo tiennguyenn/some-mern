@@ -1,5 +1,8 @@
-import { Card, CardContent, CardMedia, makeStyles, Typography } from '@material-ui/core'
-import React from 'react'
+import { Card, CardContent, CardMedia, Grid, makeStyles, Typography } from '@material-ui/core'
+import React, { useState } from 'react'
+
+import FindPeople from '../user/FindPeople'
+import Newsfeed from '../post/Newsfeed'
 import img from './../assets/images/unicornbike.jpg'
 
 const useStyles = makeStyles((theme) => ({
@@ -15,22 +18,42 @@ const useStyles = makeStyles((theme) => ({
   },
   media: {
     minHeight: 400
+  },
+  root: {
+    flexGrow: 1,
+    margin: 30
   }
 }))
 
 const Home = () => {
   const classes = useStyles()
+  const [defaultPage, setDefaultPage] = useState(false)
+
+  if (defaultPage) {
+    return (
+      <Card className={classes.card}>
+        <Typography variant="h6" className={classes.title} >Home Page</Typography>
+        <CardMedia className={classes.media} image={img} title="Unicorn Bike" />
+        <CardContent>
+          <Typography>
+            Welcome to MERN Socical Media
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <Card className={classes.card}>
-      <Typography variant="h6" className={classes.title} >Home Page</Typography>
-      <CardMedia className={classes.media} image={img} title="Unicorn Bike" />
-      <CardContent>
-        <Typography>
-          Welcome to MERN Socical Media
-        </Typography>
-      </CardContent>
-    </Card>
+    <div className={classes.root}>
+      <Grid container spacing={8}>
+        <Grid item xs={8} sm={7}>
+          <Newsfeed />
+        </Grid>
+        <Grid item xs={6} sm={5}>
+          <FindPeople/>
+        </Grid>
+      </Grid>
+    </div>
   )
 }
 
